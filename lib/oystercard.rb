@@ -10,5 +10,9 @@ class Oystercard
     fail "Balance of card is limited to #{MAXIMUM_VALUE}" if (@balance + value ) > MAXIMUM_VALUE
     @balance = balance + value
   end
+
+  def deduct(amount)
+    @balance -= amount
+  end
 end
  

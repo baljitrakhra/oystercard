@@ -19,8 +19,17 @@ describe Oystercard do
     end
 
     it 'raise an error if due to top_up balance on card goes over £90' do
-    p card.top_up Oystercard::MAXIMUM_VALUE
+    card.top_up Oystercard::MAXIMUM_VALUE
     expect {card.top_up 1 }.to raise_error "Balance of card is limited to #{Oystercard::MAXIMUM_VALUE}"
+    end
+  end
+
+  describe '#deduct' do
+    
+    it {is_expected.to respond_to(:deduct).with(1).argument}
+
+    it 'reduces the balance by certain amount' do
+      expect {card.deduct 20}.to change {card.balance}.by -20
     end
   end
 end
