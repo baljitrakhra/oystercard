@@ -24,24 +24,20 @@ describe Oystercard do
     end
   end
 
-  describe '#deduct' do
-    
-    it {is_expected.to respond_to(:deduct).with(1).argument}
-
-    it 'reduces the balance by certain amount' do
-      expect {card.deduct 20}.to change {card.balance}.by -20
-
-    end
-  end
 
   describe '#touch_in' do
     
     it {is_expected.to respond_to(:touch_in)}
 
     it 'let the passenger to start the journey' do
+       card.top_up(10)
        card.touch_in
        expect(card.in_journey).to eq true
     end 
+    
+    it 'raise an error if it is used when the balance is below minimum balance' do
+      expect {card.touch_in}.to raise_error "Entry denied: Balance below minimum level of #{Oystercard::MINIMUM_BALANCE}"
+    end
   end
   
   describe '#touch_out' do
@@ -52,7 +48,11 @@ describe Oystercard do
       card.touch_out
       expect(card.in_journey).to eq false
     end
-
+   
+    it "deduct the amount of fare from passenger's card" do
+      card.top_up(5)  
+      expect {card.touch_out}.to change{card.balance}.by -Oystercard::MINIMUM_BALANCE
+    end
   end
 
   describe '#in_journey?' do
@@ -60,6 +60,7 @@ describe Oystercard do
     it{is_expected.to respond_to(:in_journey?)}
 
     it "confirms the status of the passenger's card when passenger in travelling" do
+      card.top_up(20)
       card.touch_in
       expect(card.in_journey?).to eq true  
     end
