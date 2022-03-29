@@ -26,17 +26,23 @@ describe Oystercard do
 
 
   describe '#touch_in' do
-    
+    let(:station) {double :station}
+
     it {is_expected.to respond_to(:touch_in)}
 
     it 'let the passenger to start the journey' do
        card.top_up(10)
-       card.touch_in
-       expect(card.in_journey).to eq true
+       card.touch_in(station)
+       expect(card.in_journey?).to eq true
     end 
     
     it 'raise an error if it is used when the balance is below minimum balance' do
-      expect {card.touch_in}.to raise_error "Entry denied: Balance below minimum level of #{Oystercard::MINIMUM_BALANCE}"
+      expect {card.touch_in(station)}.to raise_error "Entry denied: Balance below minimum level of #{Oystercard::MINIMUM_BALANCE}"
+    end
+
+    it 'is recording the station passenger has boarded the train from' do
+        card.top_up(10)
+        expect(card.touch_in(station)).to eq(card.entry_station)
     end
   end
   
@@ -46,7 +52,7 @@ describe Oystercard do
     
     it 'let passenger to finish their journey' do
       card.touch_out
-      expect(card.in_journey).to eq false
+      expect(card.in_journey?).to eq false
     end
    
     it "deduct the amount of fare from passenger's card" do
@@ -56,12 +62,12 @@ describe Oystercard do
   end
 
   describe '#in_journey?' do
-
+    let(:station) {double :station}
     it{is_expected.to respond_to(:in_journey?)}
 
     it "confirms the status of the passenger's card when passenger in travelling" do
       card.top_up(20)
-      card.touch_in
+      card.touch_in(station)
       expect(card.in_journey?).to eq true  
     end
 
