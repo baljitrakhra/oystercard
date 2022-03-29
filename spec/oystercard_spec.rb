@@ -30,6 +30,43 @@ describe Oystercard do
 
     it 'reduces the balance by certain amount' do
       expect {card.deduct 20}.to change {card.balance}.by -20
+
     end
   end
+
+  describe '#touch_in' do
+    
+    it {is_expected.to respond_to(:touch_in)}
+
+    it 'let the passenger to start the journey' do
+       card.touch_in
+       expect(card.in_journey).to eq true
+    end 
+  end
+  
+  describe '#touch_out' do
+
+    it {is_expected.to respond_to(:touch_out)}
+    
+    it 'let passenger to finish their journey' do
+      card.touch_out
+      expect(card.in_journey).to eq false
+    end
+
+  end
+
+  describe '#in_journey?' do
+
+    it{is_expected.to respond_to(:in_journey?)}
+
+    it "confirms the status of the passenger's card when passenger in travelling" do
+      card.touch_in
+      expect(card.in_journey?).to eq true  
+    end
+
+    it "confirms the status of the passenger's card when passenger has completed journey" do
+        card.touch_out
+        expect(card.in_journey?).to eq false
+    end    
+  end  
 end
