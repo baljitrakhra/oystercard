@@ -1,35 +1,44 @@
 class Oystercard
-  attr_reader :balance, :entry_station
-  MAXIMUM_VALUE = 90
-  MINIMUM_BALANCE = 1
-  def initialize(balance = 0, maximum_value = MAXIMUM_VALUE)
-    @balance = balance 
-    @maximum_value = maximum_value
+  DEFAULT_LIMIT = 90.0
+  MINIMUM_FARE = 1.0
+  attr_reader :balance, :entry_station, :exit_station, :list_of_journeys
+
+  def initialize()
+    @balance = 0.0
     @entry_station = nil
+    @exit_station = nil
+    @list_of_journeys = []
   end
 
-  def top_up(value)
-    fail "Balance of card is limited to #{MAXIMUM_VALUE}" if (@balance + value ) > MAXIMUM_VALUE
-    @balance = balance + value
-  end
-
-  def touch_in(station)
-    fail "Entry denied: Balance below minimum level of #{MINIMUM_BALANCE}" if @balance < MINIMUM_BALANCE
-    @entry_station = station
-  end
-
-  def touch_out
-    deduct(MINIMUM_BALANCE)
-    @entry_station = nil
+  def top_up(amount)
+    raise "Cannot exceed #{DEFAULT_LIMIT} limit" if @balance + amount.to_f > DEFAULT_LIMIT
+    @balance += amount.to_f
   end
 
   def in_journey?
     @entry_station != nil
   end
 
-private
+  def touch_in(station)
+    raise "Below minimum fare" if @balance < MINIMUM_FARE
+    @entry_station = station
+  end
+
+  def touch_out(station)
+    self.deduct(MINIMUM_FARE)
+    @exit_station = station
+    add_journey
+    @entry_station = nil
+  end
+
+  private
 
   def deduct(amount)
-    @balance -= amount
+    @balance -= amount.to_f
+  end
+
+  def add_journey
+    journey = {entry_station: @entry_station, exit_station: @exit_station}
+    list_of_journeys.push(journey)
   end
 end
