@@ -19,11 +19,7 @@ describe Oystercard do
     end
   end
 
-  describe '#in_journey?' do
-    it 'should check in use or out of use' do
-      expect(card.in_journey?).to eq false
-    end
-  end
+ 
 
   describe '#touch_in' do
     let (:station) {double :station}
@@ -52,9 +48,7 @@ describe Oystercard do
 
     it {is_expected.to respond_to(:touch_out).with(1).argument}
 
-    it 'should change card state to out of use' do
-      expect { card.touch_out(station_exit) }.to change { card.in_journey? }.to(false)
-    end
+   
 
     it 'should deduct the minimum fare' do
       expect { card.touch_out(station_exit) }.to change { card.balance }.by(-Oystercard::MINIMUM_FARE)
